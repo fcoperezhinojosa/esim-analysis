@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hubby eSIM — Revenue & CR Opportunity Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-primary: #f4f6f9; --bg-card: #ffffff; --bg-header: #1B4F72;
+            --text-primary: #212529; --text-secondary: #6c757d; --text-on-dark: #ffffff;
+            --blue: #2E86C1; --green: #27AE60; --orange: #F39C12; --red: #E74C3C; --purple: #8E44AD; --teal: #1ABC9C;
+            --gap: 16px; --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: var(--gap); }
+        .header { background: linear-gradient(135deg, var(--bg-header), #2E86C1); color: var(--text-on-dark); padding: 28px 32px; border-radius: var(--radius); margin-bottom: var(--gap); }
+        .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .header p { font-size: 13px; opacity: 0.8; }
+        .tabs { display: flex; gap: 8px; margin-bottom: var(--gap); }
+        .tab { padding: 10px 24px; border-radius: var(--radius); border: 2px solid #dee2e6; background: var(--bg-card); cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+        .tab:hover { border-color: var(--blue); color: var(--blue); }
+        .tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+        .section { display: none; } .section.active { display: block; }
+        .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--gap); margin-bottom: var(--gap); }
+        .kpi-card { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid var(--blue); }
+        .kpi-card.green { border-left-color: var(--green); } .kpi-card.orange { border-left-color: var(--orange); }
+        .kpi-card.purple { border-left-color: var(--purple); } .kpi-card.teal { border-left-color: var(--teal); } .kpi-card.red { border-left-color: var(--red); }
+        .kpi-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .kpi-value { font-size: 28px; font-weight: 700; }
+        .kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .chart-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: var(--gap); margin-bottom: var(--gap); }
+        .chart-container { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .chart-container h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .chart-container .chart-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+        .chart-container canvas { max-height: 320px; }
+        .chart-full { grid-column: 1 / -1; }
+        .scenario-controls { display: flex; gap: 16px; align-items: center; margin-bottom: var(--gap); flex-wrap: wrap; background: var(--bg-card); padding: 16px 20px; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .scenario-controls label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+        .scenario-controls input[type=range] { width: 160px; accent-color: var(--blue); }
+        .scenario-controls .val { font-size: 14px; font-weight: 700; color: var(--blue); min-width: 45px; }
+        .scenario-controls .sep { width: 1px; height: 28px; background: #dee2e6; margin: 0 4px; }
+        .insight-box { background: linear-gradient(135deg, #EBF5FB, #D6EAF8); border-radius: var(--radius); padding: 20px 24px; margin-bottom: var(--gap); border-left: 4px solid var(--blue); }
+        .insight-box h3 { font-size: 14px; font-weight: 700; color: var(--bg-header); margin-bottom: 8px; }
+        .insight-box p { font-size: 13px; color: #2C3E50; line-height: 1.6; }
+        .insight-box.green-box { background: linear-gradient(135deg, #EAFAF1, #D5F5E3); border-left-color: var(--green); }
+        .insight-box.green-box h3 { color: #1E8449; }
+        .table-section { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; margin-bottom: var(--gap); }
+        .table-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #dee2e6; color: var(--text-secondary); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+        tbody tr:hover { background: #f8f9fa; }
+        .text-right { text-align: right; } .bold { font-weight: 700; }
+        .highlight-row { background: #EBF5FB; }
+        .total-row { font-weight: 700; background: #F8F9FA; border-top: 2px solid #dee2e6; }
+        .assumptions { background: var(--bg-card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: var(--gap); }
+        .assumptions h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+        .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+        .assumption-item { display: flex; justify-content: space-between; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; font-size: 13px; }
+        .assumption-item .label { color: var(--text-secondary); } .assumption-item .value { font-weight: 600; }
+        .footer { text-align: center; padding: 16px; font-size: 12px; color: var(--text-secondary); }
+        @media (max-width: 768px) { .chart-row { grid-template-columns: 1fr; } .kpi-row { grid-template-columns: repeat(2, 1fr); } .scenario-controls { flex-direction: column; align-items: flex-start; } }
+        @media print { .tabs { display: none; } .section { display: block !important; page-break-before: always; } .scenario-controls { display: none; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Hubby eSIM — Revenue & Conversion Opportunity Analysis</h1>
+        <p>Based on 238,361 Suntransfers purchases in 2025 (all markets) and Hubby benchmark metrics</p>
+    </div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('revenue',this)">Revenue Opportunity</div>
+        <div class="tab" onclick="switchTab('cr',this)" style="display:none">CR Uplift Analysis</div>
+        <div class="tab" onclick="switchTab('detail',this)" style="display:none">Monthly Detail</div>
+    </div>
+
+    <!-- ========== REVENUE OPPORTUNITY ========== -->
+    <div id="section-revenue" class="section active">
+        <div class="assumptions">
+            <h3>Hubby Benchmark Data</h3>
+            <div class="assumptions-grid">
+                <div class="assumption-item"><span class="label">Total Purchases (2025)</span><span class="value">238,361</span></div>
+                <div class="assumption-item"><span class="label">eSIM Activation Rate</span><span class="value">30% — 60%</span></div>
+                <div class="assumption-item"><span class="label">Top-up Rate</span><span class="value">30% of activated users</span></div>
+                <div class="assumption-item"><span class="label">Average Selling Price (ASP)</span><span class="value">€20 per upgrade</span></div>
+                <div class="assumption-item"><span class="label">Base Commission</span><span class="value">20% (scales to 40%)</span></div>
+                <div class="assumption-item"><span class="label">Source</span><span class="value">Hubby partner benchmarks</span></div>
+            </div>
+        </div>
+
+        <div class="scenario-controls">
+            <label>Activation:</label>
+            <input type="range" id="slider-activation" min="30" max="60" value="45" oninput="updateRevenue()">
+            <span class="val" id="val-activation">45%</span>
+            <div class="sep"></div>
+            <label>Top-up Rate:</label>
+            <input type="range" id="slider-topup" min="10" max="50" value="30" step="5" oninput="updateRevenue()">
+            <span class="val" id="val-topup">30%</span>
+            <div class="sep"></div>
+            <label>ASP:</label>
+            <input type="range" id="slider-asp" min="10" max="40" value="20" step="2" oninput="updateRevenue()">
+            <span class="val" id="val-asp">€20</span>
+            <div class="sep"></div>
+            <label>Commission:</label>
+            <input type="range" id="slider-commission" min="20" max="40" value="20" step="2" oninput="updateRevenue()">
+            <span class="val" id="val-commission">20%</span>
+        </div>
+
+        <div class="kpi-row" id="kpi-revenue-row"></div>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>Monthly Commission Revenue (€)</h3>
+                <div class="chart-sub">Based on monthly purchase volume and selected parameters</div>
+                <canvas id="chart-monthly-revenue"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Annual Revenue — Activation Scenarios</h3>
+                <div class="chart-sub">Conservative (30%) / Base (45%) / Optimistic (60%) activation</div>
+                <canvas id="chart-scenarios"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>Destination Mix (Booking Sample)</h3>
+                <div class="chart-sub">Top destinations from 118 UK+IE bookings</div>
+                <canvas id="chart-destinations"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Commission Scaling with Volume</h3>
+                <div class="chart-sub">+2% per 10K installations, capped at 40%</div>
+                <canvas id="chart-commission-scale"></canvas>
+            </div>
+        </div>
+
+        <div class="insight-box" id="insight-revenue"></div>
+
+        <div class="table-section">
+            <h3>Annual Revenue Scenarios</h3>
+            <table>
+                <thead><tr>
+                    <th>Scenario</th><th class="text-right">Purchases</th><th class="text-right">Activation</th>
+                    <th class="text-right">Activated eSIMs</th><th class="text-right">Top-ups</th>
+                    <th class="text-right">Gross Revenue</th><th class="text-right">Commission (20%)</th><th class="text-right">Commission (40%)</th>
+                </tr></thead>
+                <tbody id="tbody-scenarios"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ========== CR UPLIFT ANALYSIS ========== -->
+    <div id="section-cr" class="section" style="display:none !important">
+        <div class="insight-box green-box">
+            <h3>Hypothesis — CR Uplift from Free eSIM</h3>
+            <p>Offering a free eSIM as a value-added benefit differentiates Suntransfers from competitors. This analysis models the incremental revenue from small CR improvements across different uplift scenarios applied to the website sessions that generate those 238K purchases. Even a modest uplift translates into meaningful additional bookings.</p>
+        </div>
+
+        <div class="scenario-controls">
+            <label>Baseline CR:</label>
+            <input type="range" id="slider-baseline-cr" min="2" max="8" value="4" step="0.5" oninput="updateCR()">
+            <span class="val" id="val-baseline-cr">4.0%</span>
+            <div class="sep"></div>
+            <label>Avg. Booking Value:</label>
+            <input type="range" id="slider-aov" min="30" max="120" value="65" step="5" oninput="updateCR()">
+            <span class="val" id="val-aov">€65</span>
+        </div>
+
+        <div class="kpi-row" id="kpi-cr-row"></div>
+
+        <div class="chart-row">
+            <div class="chart-container chart-full">
+                <h3>Incremental Annual Revenue from CR Uplift</h3>
+                <div class="chart-sub">Booking revenue + additional eSIM commission from extra purchases</div>
+                <canvas id="chart-cr-uplift"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <h3>Monthly Incremental Purchases</h3>
+                <div class="chart-sub">Additional purchases per month at different CR uplift levels</div>
+                <canvas id="chart-cr-monthly"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Combined Annual Revenue — eSIM + CR Uplift</h3>
+                <div class="chart-sub">Total opportunity from both revenue streams</div>
+                <canvas id="chart-combined"></canvas>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h3>CR Uplift Scenarios</h3>
+            <table>
+                <thead><tr>
+                    <th>Scenario</th><th class="text-right">CR Uplift</th><th class="text-right">Add. Purchases/yr</th>
+                    <th class="text-right">Booking Revenue</th><th class="text-right">+ eSIM Commission</th><th class="text-right">Total Combined</th>
+                </tr></thead>
+                <tbody id="tbody-cr"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ========== MONTHLY DETAIL ========== -->
+    <div id="section-detail" class="section" style="display:none !important">
+        <div class="chart-row">
+            <div class="chart-container chart-full">
+                <h3>Monthly Purchases — Seasonality (2025)</h3>
+                <div class="chart-sub">Purchase volume peaks in summer; eSIM revenue follows the same pattern</div>
+                <canvas id="chart-purchases"></canvas>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h3>Monthly Revenue Funnel (Base Case: 45% activation, 30% top-up, €20 ASP, 20% commission)</h3>
+            <table>
+                <thead><tr>
+                    <th>Month</th><th class="text-right">Purchases</th><th class="text-right">Activated eSIMs</th>
+                    <th class="text-right">Top-ups</th><th class="text-right">Gross Revenue</th><th class="text-right">Commission (20%)</th>
+                </tr></thead>
+                <tbody id="tbody-monthly"></tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <h3>Destination Breakdown (from 118 UK+IE Booking Sample)</h3>
+            <table>
+                <thead><tr><th>Destination</th><th class="text-right">Bookings</th><th class="text-right">% of Total</th><th>EU/Non-EU</th><th>eSIM Need Level</th></tr></thead>
+                <tbody id="tbody-destinations"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">Suntransfers × Hubby eSIM — Revenue Opportunity Analysis | Data: 2025 purchases (238,361) + 118 booking sample | April 2026</div>
+</div>
+
+<script>
+const MONTHLY = [
+    { month: 'Jan 2025', purchases: 16496, order: 1 },
+    { month: 'Feb 2025', purchases: 14712, order: 2 },
+    { month: 'Mar 2025', purchases: 20710, order: 3 },
+    { month: 'Apr 2025', purchases: 22707, order: 4 },
+    { month: 'May 2025', purchases: 22163, order: 5 },
+    { month: 'Jun 2025', purchases: 26991, order: 6 },
+    { month: 'Jul 2025', purchases: 26967, order: 7 },
+    { month: 'Aug 2025', purchases: 25676, order: 8 },
+    { month: 'Sep 2025', purchases: 22694, order: 9 },
+    { month: 'Oct 2025', purchases: 18077, order: 10 },
+    { month: 'Nov 2025', purchases: 11203, order: 11 },
+    { month: 'Dec 2025', purchases: 9965, order: 12 },
+].sort((a, b) => a.order - b.order);
+
+const TOTAL_PURCHASES = MONTHLY.reduce((s, m) => s + m.purchases, 0); // 238,361
+
+const DESTINATIONS = [
+    { code: 'ES', name: 'Spain', count: 65, eu: true },
+    { code: 'PT', name: 'Portugal', count: 14, eu: true },
+    { code: 'GR', name: 'Greece', count: 8, eu: true },
+    { code: 'TR', name: 'Turkey', count: 7, eu: false },
+    { code: 'FR', name: 'France', count: 3, eu: true },
+    { code: 'IT', name: 'Italy', count: 3, eu: true },
+    { code: 'HR', name: 'Croatia', count: 2, eu: true },
+    { code: 'AE', name: 'UAE', count: 1, eu: false },
+    { code: 'EG', name: 'Egypt', count: 1, eu: false },
+    { code: 'US', name: 'USA', count: 1, eu: false },
+    { code: 'Other', name: 'Other', count: 13, eu: true },
+];
+
+const COLORS = ['#2E86C1','#27AE60','#F39C12','#E74C3C','#8E44AD','#1ABC9C','#D35400','#2C3E50','#16A085','#C0392B','#7D3C98'];
+let charts = {};
+
+function switchTab(tab, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + tab).classList.add('active');
+    el.classList.add('active');
+}
+
+function fmt(n) { return n.toLocaleString('en-US', {maximumFractionDigits:0}); }
+function fmtEur(n) { return '€' + n.toLocaleString('en-US', {maximumFractionDigits:0}); }
+function fmtPct(n) { return n.toFixed(1) + '%'; }
+
+// ===== REVENUE TAB =====
+function updateRevenue() {
+    const actRate = parseInt(document.getElementById('slider-activation').value) / 100;
+    const topupRate = parseInt(document.getElementById('slider-topup').value) / 100;
+    const asp = parseInt(document.getElementById('slider-asp').value);
+    const commRate = parseInt(document.getElementById('slider-commission').value) / 100;
+
+    document.getElementById('val-activation').textContent = (actRate*100).toFixed(0) + '%';
+    document.getElementById('val-topup').textContent = (topupRate*100).toFixed(0) + '%';
+    document.getElementById('val-asp').textContent = '€' + asp;
+    document.getElementById('val-commission').textContent = (commRate*100).toFixed(0) + '%';
+
+    const activated = Math.round(TOTAL_PURCHASES * actRate);
+    const topups = Math.round(activated * topupRate);
+    const gross = topups * asp;
+    const commission = Math.round(gross * commRate);
+
+    // KPIs
+    document.getElementById('kpi-revenue-row').innerHTML = `
+        <div class="kpi-card"><div class="kpi-label">Annual Purchases</div><div class="kpi-value">${fmt(TOTAL_PURCHASES)}</div><div class="kpi-sub">Suntransfers 2025</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Activated eSIMs</div><div class="kpi-value">${fmt(activated)}</div><div class="kpi-sub">${(actRate*100).toFixed(0)}% activation rate</div></div>
+        <div class="kpi-card orange"><div class="kpi-label">Paid Upgrades</div><div class="kpi-value">${fmt(topups)}</div><div class="kpi-sub">${(topupRate*100).toFixed(0)}% top-up × ${fmtEur(asp)} ASP</div></div>
+        <div class="kpi-card purple"><div class="kpi-label">Gross Upgrade Revenue</div><div class="kpi-value">${fmtEur(gross)}</div><div class="kpi-sub">${fmt(topups)} upgrades × ${fmtEur(asp)}</div></div>
+        <div class="kpi-card teal"><div class="kpi-label">Annual Commission</div><div class="kpi-value">${fmtEur(commission)}</div><div class="kpi-sub">${(commRate*100).toFixed(0)}% of gross revenue</div></div>
+    `;
+
+    // Monthly chart
+    const monthlyComm = MONTHLY.map(m => Math.round(m.purchases * actRate * topupRate * asp * commRate));
+
+    if (charts.monthlyRev) {
+        charts.monthlyRev.data.datasets[0].data = monthlyComm;
+        charts.monthlyRev.update('none');
+    } else {
+        charts.monthlyRev = new Chart(document.getElementById('chart-monthly-revenue').getContext('2d'), {
+            type: 'bar',
+            data: { labels: MONTHLY.map(m => m.month.replace(' 2025','')), datasets: [{
+                label: 'Commission', data: monthlyComm, backgroundColor: COLORS[0]+'CC', borderColor: COLORS[0], borderWidth: 1, borderRadius: 4
+            }]},
+            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>fmtEur(c.parsed.y)}}},
+                scales:{x:{grid:{display:false}}, y:{beginAtZero:true, ticks:{callback:v=>fmtEur(v)}}} }
+        });
+    }
+
+    // Scenarios chart (fixed topup/asp from sliders, vary activation)
+    const scenarioActs = [0.30, 0.45, 0.60];
+    const scenComm20 = scenarioActs.map(a => Math.round(TOTAL_PURCHASES * a * topupRate * asp * 0.20));
+    const scenComm40 = scenarioActs.map(a => Math.round(TOTAL_PURCHASES * a * topupRate * asp * 0.40));
+
+    if (charts.scenarios) {
+        charts.scenarios.data.datasets[0].data = scenComm20;
+        charts.scenarios.data.datasets[1].data = scenComm40;
+        charts.scenarios.update('none');
+    } else {
+        charts.scenarios = new Chart(document.getElementById('chart-scenarios').getContext('2d'), {
+            type: 'bar',
+            data: { labels: ['Conservative (30%)','Base (45%)','Optimistic (60%)'], datasets: [
+                { label: '20% Commission', data: scenComm20, backgroundColor: COLORS[0]+'CC', borderColor: COLORS[0], borderWidth:1, borderRadius:4 },
+                { label: '40% Commission', data: scenComm40, backgroundColor: COLORS[1]+'CC', borderColor: COLORS[1], borderWidth:1, borderRadius:4 },
+            ]},
+            options: { responsive:true, maintainAspectRatio:false,
+                plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtEur(c.parsed.y)}}},
+                scales:{x:{grid:{display:false}}, y:{beginAtZero:true, ticks:{callback:v=>fmtEur(v)}}} }
+        });
+    }
+
+    // Scenarios table
+    const tbS = document.getElementById('tbody-scenarios');
+    tbS.innerHTML = [{n:'Conservative',a:0.30},{n:'Base Case',a:0.45},{n:'Optimistic',a:0.60}].map((s,i) => {
+        const act = Math.round(TOTAL_PURCHASES * s.a);
+        const tu = Math.round(act * topupRate);
+        const gr = tu * asp;
+        const cls = i===1 ? ' class="highlight-row"' : '';
+        return `<tr${cls}>
+            <td class="bold">${s.n}</td><td class="text-right">${fmt(TOTAL_PURCHASES)}</td><td class="text-right">${(s.a*100).toFixed(0)}%</td>
+            <td class="text-right">${fmt(act)}</td><td class="text-right">${fmt(tu)}</td><td class="text-right">${fmtEur(gr)}</td>
+            <td class="text-right bold">${fmtEur(Math.round(gr*0.20))}</td><td class="text-right bold">${fmtEur(Math.round(gr*0.40))}</td></tr>`;
+    }).join('');
+
+    // Insight
+    const baseAct = Math.round(TOTAL_PURCHASES * 0.45);
+    const baseTu = Math.round(baseAct * topupRate);
+    const baseGross = baseTu * asp;
+    document.getElementById('insight-revenue').innerHTML = `<h3>Key Insight — Revenue Opportunity</h3><p>
+        With <strong>${fmt(TOTAL_PURCHASES)}</strong> annual purchases, the base case (45% activation) produces <strong>${fmt(baseAct)}</strong> activated eSIMs.
+        At ${(topupRate*100).toFixed(0)}% top-up rate and ${fmtEur(asp)} ASP, this generates <strong>${fmtEur(baseGross)}</strong> in gross upgrade revenue.
+        Suntransfers earns <strong>${fmtEur(Math.round(baseGross*0.20))}</strong> at 20% commission, scaling to <strong>${fmtEur(Math.round(baseGross*0.40))}</strong> at the 40% cap.
+        This is <strong>pure incremental revenue</strong> with zero cost to Suntransfers. The commission rate grows automatically as cumulative installations increase (+2% per 10K installs).</p>`;
+}
+
+// ===== CR UPLIFT TAB =====
+function updateCR() {
+    const baselineCR = parseFloat(document.getElementById('slider-baseline-cr').value) / 100;
+    const aov = parseInt(document.getElementById('slider-aov').value);
+    document.getElementById('val-baseline-cr').textContent = (baselineCR*100).toFixed(1) + '%';
+    document.getElementById('val-aov').textContent = '€' + aov;
+
+    // Implied sessions from purchases / CR
+    const impliedSessions = Math.round(TOTAL_PURCHASES / baselineCR);
+    const uplifts = [0.3, 0.5, 1.0, 1.5, 2.0];
+    const extraPurchases = uplifts.map(u => Math.round(impliedSessions * (u/100)));
+    const extraBookingRev = extraPurchases.map(p => p * aov);
+    // Extra eSIM commission from additional purchases (base case: 45% act, 30% topup, €20 ASP, 20% comm)
+    const extraEsimComm = extraPurchases.map(p => Math.round(p * 0.45 * 0.30 * 20 * 0.20));
+
+    // KPIs
+    const idx = 1; // +0.5pp
+    document.getElementById('kpi-cr-row').innerHTML = `
+        <div class="kpi-card"><div class="kpi-label">Implied Sessions</div><div class="kpi-value">${fmt(impliedSessions)}</div><div class="kpi-sub">${fmt(TOTAL_PURCHASES)} purchases ÷ ${fmtPct(baselineCR*100)} CR</div></div>
+        <div class="kpi-card green"><div class="kpi-label">+0.5pp → Extra Purchases</div><div class="kpi-value">+${fmt(extraPurchases[idx])}</div><div class="kpi-sub">${fmt(TOTAL_PURCHASES + extraPurchases[idx])} total annual</div></div>
+        <div class="kpi-card orange"><div class="kpi-label">+0.5pp → Booking Revenue</div><div class="kpi-value">${fmtEur(extraBookingRev[idx])}</div><div class="kpi-sub">At ${fmtEur(aov)} avg booking value</div></div>
+        <div class="kpi-card purple"><div class="kpi-label">+1pp → Booking Revenue</div><div class="kpi-value">${fmtEur(extraBookingRev[2])}</div><div class="kpi-sub">+${fmt(extraPurchases[2])} additional purchases</div></div>
+    `;
+
+    // Stacked bar chart
+    if (charts.crUplift) {
+        charts.crUplift.data.datasets[0].data = extraBookingRev;
+        charts.crUplift.data.datasets[1].data = extraEsimComm;
+        charts.crUplift.update('none');
+    } else {
+        charts.crUplift = new Chart(document.getElementById('chart-cr-uplift').getContext('2d'), {
+            type: 'bar',
+            data: { labels: uplifts.map(u=>'+'+u+'pp'), datasets: [
+                { label: 'Incremental Booking Revenue', data: extraBookingRev, backgroundColor: COLORS[1]+'CC', borderRadius:4 },
+                { label: 'Additional eSIM Commission', data: extraEsimComm, backgroundColor: COLORS[0]+'CC', borderRadius:4 },
+            ]},
+            options: { responsive:true, maintainAspectRatio:false,
+                plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtEur(c.parsed.y)}}},
+                scales:{x:{grid:{display:false},stacked:true}, y:{beginAtZero:true,stacked:true,ticks:{callback:v=>fmtEur(v)}}} }
+        });
+    }
+
+    // Monthly incremental purchases
+    const monthlyPurchaseShare = MONTHLY.map(m => m.purchases / TOTAL_PURCHASES);
+    const monthlyIncr = [0,1,2].map(i => MONTHLY.map((m,j) => Math.round(extraPurchases[i] * monthlyPurchaseShare[j])));
+
+    if (charts.crMonthly) {
+        monthlyIncr.forEach((d,i) => { charts.crMonthly.data.datasets[i].data = d; });
+        charts.crMonthly.update('none');
+    } else {
+        charts.crMonthly = new Chart(document.getElementById('chart-cr-monthly').getContext('2d'), {
+            type: 'line',
+            data: { labels: MONTHLY.map(m=>m.month.replace(' 2025','')), datasets: [
+                { label:'+0.3pp', data:monthlyIncr[0], borderColor:COLORS[3], borderWidth:2, tension:0.3, pointRadius:3, fill:false },
+                { label:'+0.5pp', data:monthlyIncr[1], borderColor:COLORS[0], borderWidth:2, tension:0.3, pointRadius:3, fill:false },
+                { label:'+1.0pp', data:monthlyIncr[2], borderColor:COLORS[1], borderWidth:2, tension:0.3, pointRadius:3, fill:false },
+            ]},
+            options: { responsive:true, maintainAspectRatio:false,
+                plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}},
+                scales:{x:{grid:{display:false}}, y:{beginAtZero:true}} }
+        });
+    }
+
+    // Combined chart
+    if (charts.combined) {
+        charts.combined.data.datasets[0].data = extraBookingRev;
+        charts.combined.data.datasets[1].data = extraEsimComm;
+        charts.combined.update('none');
+    } else {
+        charts.combined = new Chart(document.getElementById('chart-combined').getContext('2d'), {
+            type: 'bar',
+            data: { labels: uplifts.map(u=>'+'+u+'pp'), datasets: [
+                { label: 'Booking Revenue', data: extraBookingRev, backgroundColor: COLORS[1]+'CC', borderRadius:4 },
+                { label: 'eSIM Commission', data: extraEsimComm, backgroundColor: COLORS[0]+'CC', borderRadius:4 },
+            ]},
+            options: { responsive:true, maintainAspectRatio:false,
+                plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:16}}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtEur(c.parsed.y)}}},
+                scales:{x:{grid:{display:false},stacked:true}, y:{beginAtZero:true,stacked:true,ticks:{callback:v=>fmtEur(v)}}} }
+        });
+    }
+
+    // CR Table
+    const names = ['Conservative','Moderate','Strong','Very Strong','Aggressive'];
+    document.getElementById('tbody-cr').innerHTML = uplifts.map((u,i) => {
+        const cls = i===1 ? ' class="highlight-row"' : '';
+        return `<tr${cls}>
+            <td class="bold">${names[i]}</td><td class="text-right">+${u}pp</td>
+            <td class="text-right">+${fmt(extraPurchases[i])}</td><td class="text-right">${fmtEur(extraBookingRev[i])}</td>
+            <td class="text-right">${fmtEur(extraEsimComm[i])}</td><td class="text-right bold">${fmtEur(extraBookingRev[i]+extraEsimComm[i])}</td></tr>`;
+    }).join('');
+}
+
+// ===== STATIC CHARTS =====
+function initStatic() {
+    // Destinations doughnut
+    const top8 = DESTINATIONS.slice(0, 8);
+    charts.dest = new Chart(document.getElementById('chart-destinations').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: top8.map(d=>d.name), datasets: [{ data: top8.map(d=>d.count), backgroundColor: COLORS.map(c=>c+'CC'), borderColor:'#fff', borderWidth:2 }]},
+        options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
+            plugins:{legend:{position:'right',labels:{usePointStyle:true,padding:12,font:{size:12}}},
+                tooltip:{callbacks:{label:c=>{const p=((c.parsed/118)*100).toFixed(1);return `${c.label}: ${c.parsed} (${p}%)`;}}}} }
+    });
+
+    // Commission scale
+    const milestones = [0,10000,20000,30000,40000,50000,60000,70000,80000,90000,100000];
+    const rates = milestones.map(n => Math.min(20 + Math.floor(n/10000)*2, 40));
+    charts.commScale = new Chart(document.getElementById('chart-commission-scale').getContext('2d'), {
+        type: 'line',
+        data: { labels: milestones.map(n=>n===0?'0':(n/1000)+'K'), datasets: [{
+            label:'Commission Rate', data:rates, borderColor:COLORS[4], backgroundColor:COLORS[4]+'20', borderWidth:3, tension:0.1, pointRadius:4, pointBackgroundColor:COLORS[4], fill:true
+        }]},
+        options: { responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},
+            scales:{x:{grid:{display:false},title:{display:true,text:'Cumulative Installations',font:{size:11}}},
+                y:{min:18,max:42,ticks:{callback:v=>v+'%'},title:{display:true,text:'Commission Rate',font:{size:11}}}} }
+    });
+
+    // Purchases line (detail tab)
+    charts.purchases = new Chart(document.getElementById('chart-purchases').getContext('2d'), {
+        type: 'line',
+        data: { labels: MONTHLY.map(m=>m.month), datasets: [{
+            label:'Purchases', data:MONTHLY.map(m=>m.purchases), borderColor:COLORS[0], backgroundColor:COLORS[0]+'30', borderWidth:3, tension:0.3, pointRadius:5, pointBackgroundColor:COLORS[0], fill:true
+        }]},
+        options: { responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>fmt(c.parsed.y)+' purchases'}}},
+            scales:{x:{grid:{display:false}}, y:{beginAtZero:true, ticks:{callback:v=>(v/1000)+'K'}}} }
+    });
+
+    // Monthly funnel table (base case)
+    const act=0.45, tu=0.30, a=20, cm=0.20;
+    const tbody = document.getElementById('tbody-monthly');
+    let tot = {p:0,e:0,t:0,g:0,c:0};
+    tbody.innerHTML = MONTHLY.map(m => {
+        const e=Math.round(m.purchases*act), t=Math.round(e*tu), g=t*a, c=Math.round(g*cm);
+        tot.p+=m.purchases; tot.e+=e; tot.t+=t; tot.g+=g; tot.c+=c;
+        return `<tr><td class="bold">${m.month}</td><td class="text-right">${fmt(m.purchases)}</td><td class="text-right">${fmt(e)}</td>
+            <td class="text-right">${fmt(t)}</td><td class="text-right">${fmtEur(g)}</td><td class="text-right bold">${fmtEur(c)}</td></tr>`;
+    }).join('');
+    tbody.innerHTML += `<tr class="total-row"><td class="bold">TOTAL</td><td class="text-right">${fmt(tot.p)}</td><td class="text-right">${fmt(tot.e)}</td>
+        <td class="text-right">${fmt(tot.t)}</td><td class="text-right">${fmtEur(tot.g)}</td><td class="text-right bold">${fmtEur(tot.c)}</td></tr>`;
+
+    // Destinations table
+    document.getElementById('tbody-destinations').innerHTML = DESTINATIONS.map(d => {
+        const pct = ((d.count/118)*100).toFixed(1);
+        const need = d.eu ? 'Lower (EU roaming)' : 'High (no roaming)';
+        const col = d.eu ? 'var(--orange)' : 'var(--green)';
+        return `<tr><td class="bold">${d.name} (${d.code})</td><td class="text-right">${d.count}</td><td class="text-right">${pct}%</td>
+            <td>${d.eu?'EU':'Non-EU'}</td><td style="color:${col};font-weight:600">${need}</td></tr>`;
+    }).join('');
+}
+
+initStatic();
+updateRevenue();
+updateCR();
+</script>
+</body>
+</html>
